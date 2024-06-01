@@ -2,7 +2,7 @@ FROM python:3.9-slim
 
 
 
-WORKDIR /sahilfirsthack
+WORKDIR /EchoGPT
 
 
 
@@ -24,7 +24,7 @@ COPY . .
 EXPOSE 8000
 
 
-CMD ["uvicorn", "fastgpt:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "echogpt:app", "--host", "0.0.0.0", "--port", "8000"]
 
 
 
