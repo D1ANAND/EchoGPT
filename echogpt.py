@@ -2,6 +2,7 @@ import os
 from typing import List
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_community.document_loaders import S3FileLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -31,6 +32,15 @@ class AppState:
 state = AppState()
 
 app = FastAPI()
+
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = origins,
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"],
+)
 
 class ChatRequest(BaseModel):
     user_query: str
