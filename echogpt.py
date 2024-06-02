@@ -1,6 +1,6 @@
 import os
 from typing import List
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Query
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_core.messages import AIMessage, HumanMessage
@@ -110,6 +110,27 @@ async def chat(request: ChatRequest):
     state.chat_history.append(AIMessage(content=response))
 
     return {"response": response, "chat_history": [msg.content for msg in state.chat_history]}
+
+
+wallet_to_s3url = {}
+
+class WalletS3UrlMapping(BaseModel):
+    wallet_address: str
+    s3url: str
+
+
+@app.post("/mapS3Url")
+async def map_s3url(mapping: WalletS3UrlMapping):
+    wallet_to_s3url[mapping.wallet_address] = mapping.s3url
+    return {"message": "S3 URL mapped to wallet address successfully"}
+
+@app.get("/getS3Url")
+async def get_s3url(wallet_address: str = Query(...)):
+    s3url = wallet_to_s3url.get(wallet_address)
+    if s3url:
+        return { wallet_address : s3url}
+    else:
+        raise HTTPException(status_code=404, detail="Wallet address not found")
 
 if __name__ == "__main__":
     import uvicorn
